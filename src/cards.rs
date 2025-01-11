@@ -1,15 +1,7 @@
-pub struct Card {
-    suit: Suit,
-    value: Value,
-}
+use pyo3::prelude::*;
 
-impl Card {
-    pub fn new(suit: Suit, value: Value) -> Card {
-        Card { suit, value }
-    }
-}
-
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)] // Add the Clone and Copy traits to the Suit enum, otherwise conversion to python objects fails
+#[pyclass(eq, eq_int)]
 pub enum Suit {
     Spades,
     Hearts,
@@ -17,7 +9,8 @@ pub enum Suit {
     Clubs,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[pyclass(eq, eq_int)]
 pub enum Value {
     Two,
     Three,
@@ -34,14 +27,48 @@ pub enum Value {
     Ace,
 }
 
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[pyclass(eq, eq_int)]
+pub enum Side {
+    Front,
+    Back,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[pyclass]
+pub struct Card {
+    #[pyo3(get, set)]
+    pub suit: Suit,
+    #[pyo3(get, set)]
+    pub value: Value,
+    #[pyo3(get, set)]
+    pub side: Side,
+}
+
+#[pymethods]
+impl Card {
+    #[new]
+    pub fn new(suit: Suit, value: Value, side: Side) -> Self {
+        Card { suit, value, side}
+    }
+
+    pub fn flip(&mut self) {
+        self.side = match self.side {
+            Side::Front => Side::Back,
+            Side::Back => Side::Front,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_new_card() {
-        let card = Card::new(Suit::Spades, Value::Ace);
+        let card = Card::new(Suit::Spades, Value::Ace, Side::Back);
         assert_eq!(card.suit, Suit::Spades);
         assert_eq!(card.value, Value::Ace);
+        assert_eq!(card.side, Side::Back);
     }
 }

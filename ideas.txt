@@ -4,6 +4,7 @@ Rust:
 - Cards -> class
     - number values
     - type (spades, clubs, hearts, diamonds)
+    - state (front, back)
 
 - Deck -> class
     - holds the Cards

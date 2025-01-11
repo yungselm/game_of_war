@@ -1,14 +1,16 @@
-use pyo3::prelude::*;
+mod cards;
+mod deck;
+mod player;
 
-/// Formats the sum of two numbers as string.
-#[pyfunction]
-fn sum_as_string(a: usize, b: usize) -> PyResult<String> {
-    Ok((a + b).to_string())
-}
+use pyo3::prelude::*;
+use cards::*;
+use deck::*;
 
 /// A Python module implemented in Rust.
 #[pymodule]
 fn game_of_war(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(sum_as_string, m)?)?;
+    m.add_class::<Deck>()?;
+    m.add_class::<Card>()?;
+    m.add_class::<Player>()?;
     Ok(())
 }
