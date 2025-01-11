@@ -1,0 +1,35 @@
+[build-system]
+requires = ["maturin>=1.8,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "game_of_war"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dynamic = ["version"]
+[tool.maturin]
+features = ["pyo3/extension-module"]
+
+[tool.poetry]
+name = "game_of_war"
+version = "0.1.0"
+description = "A hybrid Python-Rust project to simulate the card game 'War'"
+authors = ["yungselm <anselm.stark@students.unibe.ch>"]
+readme = "README.md"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.8, <3.12"
+maturin = "1.4.0"
+loguru = "*"
+tqdm = "*"
+numpy = "*"
+pandas = "*"
+pyqt5 = "*"
+pyqtdarktheme = "2.1.0"
+matplotlib = "*"
+pyinstaller = "*"
