@@ -33,6 +33,11 @@ impl Deck {
     pub fn push(&mut self, card: Card) {
         self.deck.push(card);
     }
+
+    // needed for testing
+    pub fn get_deck(&self) -> Vec<Card> {
+        self.deck.clone()
+    }
 }
 
 #[cfg(test)]

@@ -46,7 +46,14 @@ impl Player {
         Some(card)
     }
 
-    pub fn add_cards(&mut self, cards: Vec<Card>) {
+    pub fn add_cards(&mut self, mut cards: Vec<Card>) {
+        // ensure that all cards have "Back" when adding to player_deck
+        for card in cards.iter_mut() {
+            if card.side == Side::Front {
+                card.side = Side::Back;
+            }
+        }
+
         let card = self.player_deck.extend(cards);
         if self.player_deck.is_empty() {
             self.dead_or_alive = PlayerState::Alive;
