@@ -69,13 +69,13 @@ impl Game {
                 } else {
                     // Go to War!!
                     println!("War!");
-                    let mut facedown_card1 = self.player1.play_card();
-                    let mut facedown_card2 = self.player2.play_card();
-                    facedown_card1.flip();
-                    facedown_card2.flip();
+                    // let mut facedown_card1 = self.player1.play_card();
+                    // let mut facedown_card2 = self.player2.play_card();
+                    // facedown_card1.flip();
+                    // facedown_card2.flip();
 
-                    let faceup_card1 = self.player1.play_card();
-                    let faceup_card2 = self.player2.play_card();
+                    // let faceup_card1 = self.player1.play_card();
+                    // let faceup_card2 = self.player2.play_card();
 
                     self.evaluate_outcome()
                 }

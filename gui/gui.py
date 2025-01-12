@@ -1,9 +1,11 @@
 from loguru import logger
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtGui import QPen, QBrush, QPainter, QImage
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QGraphicsScene, QGraphicsView, QGraphicsItem
 
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtGui import QPen, QPainter, QImage
+from PyQt5.QtCore import Qt
+
+import game_of_war as gow
+from .dynamic_card_generator import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -14,6 +16,8 @@ class MainWindow(QMainWindow):
         self.setGeometry(screen)
         self.draw_scene()
         self.paintEvent(screen)
+
+        self.deck = gow.Deck()
 
         self.show()
 
@@ -39,3 +43,6 @@ class MainWindow(QMainWindow):
         # display a .jpeg image on the screen
         image = QImage('media/card_back.png')
         painter.drawImage(1600, 60, image)
+
+        image2 = create_card_image("Two", "Clubs", "Front")
+        painter.drawImage(750, 150, image2)
