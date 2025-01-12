@@ -72,3 +72,5 @@ docs/_build/
 .python-version
 
 ideas.txt
+Cargo.lock
+poetry.lock

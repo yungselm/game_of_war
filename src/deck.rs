@@ -2,6 +2,7 @@ use pyo3::prelude::*;
 use super::cards::{Card, Suit, Value, Side};
 use rand::seq::SliceRandom;
 
+#[derive(Debug, PartialEq, Eq, Clone)]
 #[pyclass]
 pub struct Deck {
     deck: Vec<Card>,
@@ -10,7 +11,7 @@ pub struct Deck {
 #[pymethods]
 impl Deck {
     #[new]
-    fn new() -> Self {
+    pub fn new() -> Self {
         let mut deck = Vec::new();
         for &suit in &[Suit::Spades, Suit::Hearts, Suit::Diamonds, Suit::Clubs] {
             for &value in &[Value::Two, Value::Three, Value::Four, Value::Five, Value::Six, Value::Seven, Value::Eight, Value::Nine, Value::Ten, Value::Jack, Value::Queen, Value::King, Value::Ace] {
@@ -20,12 +21,17 @@ impl Deck {
         Deck { deck }
     }
 
-    fn shuffle(&mut self) {
+    pub fn shuffle(&mut self) {
         self.deck.shuffle(&mut rand::thread_rng());
     }
 
-    fn draw(&mut self) -> Option<Card> {
+    pub fn draw(&mut self) -> Option<Card> {
         self.deck.pop() // only removes one value, now players have to repeatedly draw cards, even though need half the deck --> fix later
+    }
+
+    // needed for testing
+    pub fn push(&mut self, card: Card) {
+        self.deck.push(card);
     }
 }
 
