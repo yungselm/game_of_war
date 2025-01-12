@@ -69,6 +69,14 @@ impl Game {
                 } else {
                     // Go to War!!
                     println!("War!");
+                    let mut facedown_card1 = self.player1.play_card();
+                    let mut facedown_card2 = self.player2.play_card();
+                    facedown_card1.flip();
+                    facedown_card2.flip();
+
+                    let faceup_card1 = self.player1.play_card();
+                    let faceup_card2 = self.player2.play_card();
+
                     self.evaluate_outcome()
                 }
             }
@@ -130,9 +138,9 @@ mod tests {
 
     #[test]
     fn test_initialize_game() {
-        let mut player1 = Player::new("Player 1".to_string());
-        let mut player2 = Player::new("Player 2".to_string());
-        let mut deck = Deck::new();
+        let player1 = Player::new("Player 1".to_string());
+        let player2 = Player::new("Player 2".to_string());
+        let deck = Deck::new();
         let mut game = Game::new(player1, player2, deck);
         game.initialize_game();
         assert_eq!(game.player1.get_player_deck().len(), 26);
@@ -141,9 +149,9 @@ mod tests {
 
     #[test]
     fn test_play_round() {
-        let mut player1 = Player::new("Player 1".to_string());
-        let mut player2 = Player::new("Player 2".to_string());
-        let mut deck = Deck::new();
+        let player1 = Player::new("Player 1".to_string());
+        let player2 = Player::new("Player 2".to_string());
+        let deck = Deck::new();
         let mut game = Game::new(player1, player2, deck);
         game.initialize_game();
         let outcome = game.play_round();
@@ -153,9 +161,9 @@ mod tests {
 
     #[test]
     fn test_evaluate_outcome() {
-        let mut player1 = Player::new("Player 1".to_string());
-        let mut player2 = Player::new("Player 2".to_string());
-        let mut deck = Deck::new();
+        let player1 = Player::new("Player 1".to_string());
+        let player2 = Player::new("Player 2".to_string());
+        let deck = Deck::new();
         let mut game = Game::new(player1, player2, deck);
         game.initialize_game();
         let outcome = game.evaluate_outcome();
@@ -164,9 +172,9 @@ mod tests {
 
     #[test]
     fn test_finish_game() {
-        let mut player1 = Player::new("Player 1".to_string());
-        let mut player2 = Player::new("Player 2".to_string());
-        let mut deck = Deck::new();
+        let player1 = Player::new("Player 1".to_string());
+        let player2 = Player::new("Player 2".to_string());
+        let deck = Deck::new();
         let mut game = Game::new(player1, player2, deck);
         game.initialize_game();
         game.finish_game();
