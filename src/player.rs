@@ -36,10 +36,14 @@ impl Player {
 
     pub fn play_card(&mut self) -> Option<Card> {
         let card = self.player_deck.pop();
+        let card = match card {
+            Some(card) => card,
+            None => return None,
+        };
         if self.player_deck.is_empty() {
             self.dead_or_alive = PlayerState::Dead;
         }
-        card
+        Some(card)
     }
 
     pub fn add_cards(&mut self, cards: Vec<Card>) {
@@ -48,6 +52,14 @@ impl Player {
             self.dead_or_alive = PlayerState::Alive;
         }
         card
+    }
+
+    pub fn get_player_name(&self) -> String {
+        self.player_name.clone()
+    }
+
+    pub fn get_player_deck(&self) -> Vec<Card> {
+        self.player_deck.clone()
     }
 }
 

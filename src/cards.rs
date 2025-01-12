@@ -27,6 +27,49 @@ pub enum Value {
     Ace,
 }
 
+impl PartialOrd for Value {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Value {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        use Value::*;
+        let self_rank = match self{
+            Two => 0,
+            Three => 1,
+            Four => 2,
+            Five => 3,
+            Six => 4,
+            Seven => 5,
+            Eight => 6,
+            Nine => 7,
+            Ten => 8,
+            Jack => 9,
+            Queen => 10,
+            King => 11,
+            Ace => 12,
+        };
+        let other_rank = match other {
+            Two => 0,
+            Three => 1,
+            Four => 2,
+            Five => 3,
+            Six => 4,
+            Seven => 5,
+            Eight => 6,
+            Nine => 7,
+            Ten => 8,
+            Jack => 9,
+            Queen => 10,
+            King => 11,
+            Ace => 12,
+        };
+        self_rank.cmp(&other_rank)
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[pyclass(eq, eq_int)]
 pub enum Side {
