@@ -1,3 +1,5 @@
+import loguru as logger
+
 import game_of_war as gow
 from PyQt5.QtGui import QImage
 from PIL import Image, ImageDraw, ImageFont, ImageQt
@@ -45,34 +47,29 @@ def create_card_image(value, suit, side, output_file="card.png"):
 
         image.paste(suit_image, (75, 130), suit_image)
     
-    # save image
-    # image.save(output_file)
+    return image
 
-    return QImage(ImageQt(image))
+value = "Ace"
+suit = "Hearts"
+side = "Front"
+card_image = create_card_image(value, suit, side)
 
-if __name__ == "main":
-    # Example usage
-    value = "Ace"
-    suit = "Hearts"
-    side = "Front"
-    card_image = create_card_image(value, suit, side)
+# Display the card image
+plt.imshow(card_image)
+plt.axis("off")
+plt.show()
 
-    # Display the card image
-    plt.imshow(card_image)
-    plt.axis("off")
-    plt.show()
+deck = gow.Deck()
+deck.shuffle()
+drawn_card = deck.draw()
 
-    deck = gow.Deck()
-    deck.shuffle()
-    drawn_card = deck.draw()
+value = str(drawn_card.value).split(".")[1]
+suit = str(drawn_card.suit).split(".")[1]
+side = "Front"
 
-    value = str(drawn_card.value).split(".")[1]
-    suit = str(drawn_card.suit).split(".")[1]
-    side = "Front"
+card_image = create_card_image(value, suit, side)
 
-    card_image = create_card_image(value, suit, side)
-
-    # Display the card image
-    plt.imshow(card_image)
-    plt.axis("off")
-    plt.show()
+# Display the card image
+plt.imshow(card_image)
+plt.axis("off")
+plt.show()
