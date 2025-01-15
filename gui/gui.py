@@ -20,10 +20,15 @@ class MainWindow(QMainWindow):
 
         self.init_gui()
 
+    def __call__(self):
         # Test: draw a card
         self.deck.shuffle()
-        self.draw_card(self.Player1, self.deck.draw())
-        self.draw_card(self.Player2, self.deck.draw()) # draws the same for the second player??
+        card1 = self.deck.draw()
+        print("card1: ", card1)
+        self.draw_card(self.Player1, card1)
+        card2 = self.deck.draw()
+        print("card2: ", card2)
+        self.draw_card(self.Player2, card2)
 
     def init_gui(self):
         self.setWindowTitle("Game of War")
@@ -57,11 +62,11 @@ class MainWindow(QMainWindow):
         suit = str(card.suit).split(".")[1]
         # side = str(card.side).split(".")[1]
         side = "Front"
-        print(self.Player1 == player)
         print(f"Card: {value} of {suit}, Side: {side}")
 
         y1, y2 = hashmap_cropping[suit]
         x1, x2 = hashmap_cropping[value]
+        print("coordinates are: ", x1, y1, x2, y2)
 
         if card is not None: 
             x, y = (self.x_player1, self.y_player1) if player == self.Player1 else (self.x_player2, self.y_player2)
@@ -70,8 +75,13 @@ class MainWindow(QMainWindow):
             else:
                 card = self.graphical_deck.crop((x1, y1, x2, y2))
                 card = card.resize((200, 300))
-                image_path = "media/temp_card.png"
-                card.save(image_path)
+                if player == self.Player2:
+                    # card = card.rotate(180)
+                    image_path = "media/temp_card_p2.png"
+                    card.save(image_path)
+                else:
+                    image_path = "media/temp_card_p1.png"
+                    card.save(image_path)
             self.drawn_cards.append((x, y, image_path))
             self.update()
 

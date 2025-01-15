@@ -9,6 +9,8 @@ def main():
     window = MainWindow()
     window.show()
 
+    window()
+
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
