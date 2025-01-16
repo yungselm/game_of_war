@@ -69,6 +69,8 @@ impl Game {
                 } else {
                     // Go to War!!
                     println!("War!");
+                    // let mut war_tuple = [Card, Card];
+
                     // let mut facedown_card1 = self.player1.play_card();
                     // let mut facedown_card2 = self.player2.play_card();
                     // facedown_card1.flip();
@@ -115,6 +117,22 @@ impl Game {
         while !self.game_over {
             self.play_round();
         }
+    }
+
+    pub fn __repr__(&self) -> String { // needed for Python to print the object
+        format!(
+            "Game(player1: {:?}, player2: {:?}, deck size: {}, table cards: {:?}, outcome: {:?})",
+            self.player1,
+            self.player2,
+            self.deck.len(),
+            self.table_cards,
+            self.outcome
+        )
+    }
+
+    #[getter] // needed for Python to access the attribute
+    pub fn game_over(&self) -> bool {
+        self.game_over
     }
 }
 

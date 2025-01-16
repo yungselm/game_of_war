@@ -99,6 +99,7 @@ impl Card {
         self.side = match self.side {
             Side::Front => Side::Back,
             Side::Back => Side::Front,
+            _ => panic!("No card to flip")
         }
     }
 }

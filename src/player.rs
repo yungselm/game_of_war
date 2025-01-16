@@ -35,10 +35,11 @@ impl Player {
     }
 
     pub fn play_card(&mut self) -> Option<Card> {
-        let card = self.player_deck.pop();
-        let card = match card {
+        let mut card = self.player_deck.pop();
+        // card.flip();
+        let mut card = match card {
             Some(card) => card,
-            None => return None,
+            _ => return None,
         };
         if self.player_deck.is_empty() {
             self.dead_or_alive = PlayerState::Dead;

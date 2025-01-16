@@ -29,6 +29,11 @@ impl Deck {
         self.deck.pop() // only removes one value, now players have to repeatedly draw cards, even though need half the deck --> fix later
     }
 
+    // needed for python print (debugging)
+    pub fn len(&self) -> usize {
+        self.deck.len()
+    }
+
     // needed for testing
     pub fn push(&mut self, card: Card) {
         self.deck.push(card);

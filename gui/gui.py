@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtGui import QPainter, QImage, QPen
 from PyQt5.QtCore import Qt
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 import game_of_war as gow
 
@@ -15,8 +15,12 @@ class MainWindow(QMainWindow):
         self.game = gow.Game(self.Player1, self.Player2, self.deck)
 
         self.drawn_cards = []
-        self.x_player1, self.y_player1 = 80, 600
-        self.x_player2, self.y_player2 = 1600, 60
+        self.x_player1_card, self.y_player1_card = 750, 500
+        self.x_player2_card, self.y_player2_card = 750, 150
+        self.x_player1_war_card, self.y_player1_war_card = 1000, 500
+        self.x_player2_war_card, self.y_player2_war_card = 1000, 150
+        self.x_player1_deck, self.y_player1_deck = 80, 600
+        self.x_player2_deck, self.y_player2_deck = 1600, 60
 
         self.init_gui()
 
@@ -53,7 +57,7 @@ class MainWindow(QMainWindow):
             "Six": [1036, 1170],
             "Five": [1179, 1312],
             "Four": [1322, 1455],
-            "Three": [1476, 1609],
+            "Three": [1465, 1598],
             "Two": [1608, 1741],
             "Ace": [1751, 1884]
         }
@@ -69,21 +73,50 @@ class MainWindow(QMainWindow):
         print("coordinates are: ", x1, y1, x2, y2)
 
         if card is not None: 
-            x, y = (self.x_player1, self.y_player1) if player == self.Player1 else (self.x_player2, self.y_player2)
+            x, y = (self.x_player1_card, self.y_player1_card) if player == self.Player1 else (self.x_player2_card, self.y_player2_card)
             if side == "Back":
                 image_path = "media/card_back.png"
             else:
                 card = self.graphical_deck.crop((x1, y1, x2, y2))
                 card = card.resize((200, 300))
                 if player == self.Player2:
-                    # card = card.rotate(180)
                     image_path = "media/temp_card_p2.png"
                     card.save(image_path)
+                    # self.pixelate_and_desaturate_image(card, image_path, 2)
                 else:
                     image_path = "media/temp_card_p1.png"
                     card.save(image_path)
+                    # self.pixelate_and_desaturate_image(card, image_path, 2)
             self.drawn_cards.append((x, y, image_path))
             self.update()
+
+    @staticmethod   
+    def pixelate_and_desaturate_image(image, output_image_path, pixel_size):
+        width, height = image.size
+
+        image_small = image.resize(
+            (width // pixel_size, height // pixel_size),
+            resample=Image.NEAREST
+        )
+
+        img_pixelated = image_small.resize(
+            (width, height),
+            Image.NEAREST
+        )
+
+        enhancer = ImageEnhance.Color(img_pixelated)
+        img_desaturated = enhancer.enhance(0.5)
+
+        enhancer = ImageEnhance.Brightness(img_desaturated)
+        img_pastel = enhancer.enhance(1.2)
+
+        blue_overlay = Image.new("RGB", img_pastel.size, (173, 216, 230))
+        img_pastel = img_pastel.convert("RGB")
+        blue_overlay = blue_overlay.convert("RGB")
+
+        img_pastel = Image.blend(img_pastel, blue_overlay, 0.3)        
+
+        img_pastel.save(output_image_path)
 
     def paintEvent(self, event):
         painter = QPainter(self)
