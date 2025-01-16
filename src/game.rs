@@ -101,16 +101,17 @@ impl Game {
     pub fn evaluate_outcome(&mut self) -> Outcome {
         if self.player1.get_player_deck().is_empty() {
             self.game_over = true;
-            Outcome::Player2Wins
+            self.outcome = Outcome::Player2Wins;
         } else if self.player2.get_player_deck().is_empty() {
             self.game_over = true;
-            Outcome::Player1Wins
-        } else if !self.player1.get_player_deck().is_empty() && !self.player2.get_player_deck().is_empty() {
-            Outcome::Running
-        } else {
+            self.outcome = Outcome::Player1Wins;
+        } else if self.player1.get_player_deck().is_empty() && self.player2.get_player_deck().is_empty() {
             self.game_over = true;
-            Outcome::Tie
+            self.outcome = Outcome::Tie;
+        } else {
+            self.outcome = Outcome::Running;
         }
+        self.outcome.clone()
     }
 
     pub fn finish_game(&mut self) {
@@ -131,6 +132,11 @@ impl Game {
     }
 
     #[getter] // needed for Python to access the attribute
+    pub fn outcome(&self) -> Outcome {
+        self.outcome.clone()
+    }
+
+    #[getter]
     pub fn game_over(&self) -> bool {
         self.game_over
     }

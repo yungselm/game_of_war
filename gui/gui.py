@@ -1,14 +1,53 @@
-from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtGui import QPainter, QImage, QPen
+from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton
 from PyQt5.QtCore import Qt
-from PIL import Image, ImageEnhance
-
+from PyQt5.QtGui import QPainter, QImage, QPen
+from PIL import Image
 import game_of_war as gow
+
+from .game_manager import GameManager
+
+class Layer(QtCore.QObject):
+    def __init__(self, host, child, alignment=Qt.AlignLeft, setWidth=False, setHeight=False, parent=None):
+        super().__init__(parent)
+        self._host = host
+        self._child = child
+        self._alignment = alignment
+        self._setWidth = setWidth
+        self._setHeight = setHeight
+        child.setParent(host)
+        host.installEventFilter(self)
+
+    def eventFilter(self, watched, event):
+        if watched != self._host or event.type() != QtCore.QEvent.Resize:
+            return False
+        hostSize = event.size()
+        childSize = self._child.sizeHint()
+        alignment = self._alignment
+        x = 0
+        y = 0
+        dWidth = max(0, hostSize.width() - childSize.width())
+        dHeight = max(0, hostSize.height() - childSize.height())
+        if alignment & Qt.AlignRight:
+            x = dWidth
+        elif alignment & Qt.AlignHCenter:
+            x = dWidth / 2
+        if alignment & Qt.AlignVCenter:
+            y = dHeight / 2
+        elif alignment & Qt.AlignBottom:
+            y = dHeight
+        width = hostSize.width() if self._setWidth else childSize.width()
+        height = hostSize.height() if self._setHeight else childSize.height()
+        self._child.setGeometry(x, y, width, height)
+        return False
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.graphical_deck = Image.open("media/full_set.png")
+        self.game_manager = GameManager()
+
+        # only needed for testing
         self.Player1 = gow.Player("yungselm")
         self.Player2 = gow.Player("COM")
         self.deck = gow.Deck()
@@ -39,7 +78,35 @@ class MainWindow(QMainWindow):
         self.setStyleSheet("background-color: green;")
         screen = self.screen().availableGeometry()
         self.setGeometry(screen)
+
+        # Add buttons at the specified positions and sizes
+        self.add_buttons()
+
         self.show()
+
+    def add_buttons(self):
+        # Create two buttons
+        button1 = QPushButton("Start Game", self)
+        button1.setGeometry(750, 900, 200, 50)
+        button1.setStyleSheet("background-color: white; color: green; font-size: 20px;")
+        button1.clicked.connect(self.start_game)  # Placeholder for start game method
+
+        button2 = QPushButton("Play Round", self)
+        button2.setGeometry(1000, 900, 200, 50)
+        button2.setStyleSheet("background-color: white; color: green; font-size: 20px;")
+        button2.clicked.connect(self.play_round)  # Placeholder for reset game method
+
+        # Use the Layer class to manage widget positioning
+        Layer(self, button1, Qt.AlignLeft)
+        Layer(self, button2, Qt.AlignLeft)
+
+    def start_game(self):
+        GameManager.play_game(self)
+        print("Game started")
+
+    def play_round(self):
+        GameManager.play_game(self)
+        print("Play round")
 
     def draw_card(self, player, card):
         hashmap_cropping = {
@@ -64,7 +131,6 @@ class MainWindow(QMainWindow):
 
         value = str(card.value).split(".")[1]
         suit = str(card.suit).split(".")[1]
-        # side = str(card.side).split(".")[1]
         side = "Front"
         print(f"Card: {value} of {suit}, Side: {side}")
 
@@ -82,41 +148,11 @@ class MainWindow(QMainWindow):
                 if player == self.Player2:
                     image_path = "media/temp_card_p2.png"
                     card.save(image_path)
-                    # self.pixelate_and_desaturate_image(card, image_path, 2)
                 else:
                     image_path = "media/temp_card_p1.png"
                     card.save(image_path)
-                    # self.pixelate_and_desaturate_image(card, image_path, 2)
             self.drawn_cards.append((x, y, image_path))
             self.update()
-
-    @staticmethod   
-    def pixelate_and_desaturate_image(image, output_image_path, pixel_size):
-        width, height = image.size
-
-        image_small = image.resize(
-            (width // pixel_size, height // pixel_size),
-            resample=Image.NEAREST
-        )
-
-        img_pixelated = image_small.resize(
-            (width, height),
-            Image.NEAREST
-        )
-
-        enhancer = ImageEnhance.Color(img_pixelated)
-        img_desaturated = enhancer.enhance(0.5)
-
-        enhancer = ImageEnhance.Brightness(img_desaturated)
-        img_pastel = enhancer.enhance(1.2)
-
-        blue_overlay = Image.new("RGB", img_pastel.size, (173, 216, 230))
-        img_pastel = img_pastel.convert("RGB")
-        blue_overlay = blue_overlay.convert("RGB")
-
-        img_pastel = Image.blend(img_pastel, blue_overlay, 0.3)        
-
-        img_pastel.save(output_image_path)
 
     def paintEvent(self, event):
         painter = QPainter(self)

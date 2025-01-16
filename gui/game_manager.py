@@ -26,6 +26,7 @@ class GameManager:
         
         # Game over
         print(f"Game finished. Final outcome: {self.game.outcome}")
+        print(self.game)
 
 if __name__ == '__main__':
     manager = GameManager()
