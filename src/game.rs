@@ -10,6 +10,7 @@ pub enum Outcome {
     Player2Wins,
     Tie,
     Running,
+    ItsWar, // only needed so python can catch the intermediate stage, to draw a coupled event
 }
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -44,17 +45,14 @@ impl Game {
     }
 
     pub fn play_round(&mut self) -> Outcome {
-        let player1_card = self.player1.play_card();
-        let player2_card = self.player2.play_card();
+        let player1_card = self.player1.play_card(true);
+        let player2_card = self.player2.play_card(true);
 
         self.table_cards.extend(
             vec![player1_card, player2_card]
                 .into_iter()
                 .filter_map(|card| card)
-        );        
-        for card in self.table_cards.iter_mut() {
-            card.flip();
-        }
+        );
 
         match (player1_card, player2_card) {
             (Some(player1_card), Some(player2_card)) => {
@@ -69,17 +67,7 @@ impl Game {
                 } else {
                     // Go to War!!
                     println!("War!");
-                    // let mut war_tuple = [Card, Card];
-
-                    // let mut facedown_card1 = self.player1.play_card();
-                    // let mut facedown_card2 = self.player2.play_card();
-                    // facedown_card1.flip();
-                    // facedown_card2.flip();
-
-                    // let faceup_card1 = self.player1.play_card();
-                    // let faceup_card2 = self.player2.play_card();
-
-                    self.evaluate_outcome()
+                    self.handle_war()
                 }
             }
             (None, Some(_player2_card)) => {
@@ -114,13 +102,60 @@ impl Game {
         self.outcome.clone()
     }
 
+    fn handle_war(&mut self) -> Outcome {
+        self.outcome = Outcome::ItsWar;
+
+        let player_1_facedown = self.player1.play_card(false);
+        let player_2_facedown = self.player2.play_card(false);
+
+        let player_1_faceup = self.player1.play_card(true);
+        let player_2_faceup = self.player2.play_card(true);
+
+        self.table_cards.extend(
+            vec![player_1_facedown, player_2_facedown, player_1_faceup, player_2_faceup]
+                .into_iter()
+                .filter_map(|card| card)
+        );
+
+        match (player_1_faceup, player_2_faceup) {
+            (Some(player1_card), Some(player2_card)) => {
+                if player1_card.value > player2_card.value {
+                    self.player1.add_cards(self.table_cards.clone());
+                    self.table_cards.clear();
+                    self.evaluate_outcome()
+                } else if player1_card.value < player2_card.value {
+                    self.player2.add_cards(self.table_cards.clone());
+                    self.table_cards.clear();
+                    self.evaluate_outcome()
+                } else {
+                    println!("War continues!");
+                    self.handle_war()
+                }
+            }
+            (None, Some(_player2_card)) => {
+                self.game_over = true;
+                Outcome::Player2Wins
+            }
+            (Some(_player1_card), None) => {
+                self.game_over = true;
+                Outcome::Player1Wins
+            }
+            (None, None) => {
+                self.game_over = true;
+                Outcome::Tie
+            }
+        }
+    }
+
+    // mainly used for testing and debugging
     pub fn finish_game(&mut self) {
         while !self.game_over {
             self.play_round();
         }
     }
 
-    pub fn __repr__(&self) -> String { // needed for Python to print the object
+    // needed for Python to print the object
+    pub fn __repr__(&self) -> String {
         format!(
             "Game(player1: {:?}, player2: {:?}, deck size: {}, table cards: {:?}, outcome: {:?})",
             self.player1,
@@ -133,7 +168,7 @@ impl Game {
 
     #[getter] // needed for Python to access the attribute
     pub fn outcome(&self) -> Outcome {
-        self.outcome.clone()
+        self.outcome.clone() // needed clone to compile but don't know why
     }
 
     #[getter]

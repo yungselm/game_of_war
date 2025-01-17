@@ -34,11 +34,15 @@ impl Player {
         }
     }
 
-    pub fn play_card(&mut self) -> Option<Card> {
-        let mut card = self.player_deck.pop();
-        // card.flip();
-        let mut card = match card {
-            Some(card) => card,
+    pub fn play_card(&mut self, face_up: bool) -> Option<Card> {
+        let card = self.player_deck.pop();
+        let card = match card {
+            Some(mut card) => {
+                if face_up {
+                    card.side = Side::Front;
+                }
+                card
+            },
             _ => return None,
         };
         if self.player_deck.is_empty() {
@@ -96,7 +100,7 @@ mod tests {
         let mut test_player = Player::new("Test Player".to_string());
         let mut test_deck = Deck::new();
         test_player.initial_draw(&mut test_deck);
-        let card = test_player.play_card();
+        let card = test_player.play_card(true);
         assert_eq!(test_player.player_deck.len(), 25);
         assert_eq!(card.is_some(), true);
     }
@@ -119,7 +123,7 @@ mod tests {
         let mut test_player = Player::new("Test Player".to_string());
         let mut test_deck = Deck::new();
         test_deck.push(Card::new(Suit::Spades, Value::Ace, Side::Back));
-        test_player.play_card();
+        test_player.play_card(true);
         assert_eq!(test_player.dead_or_alive, PlayerState::Dead);
     }
 
@@ -129,7 +133,7 @@ mod tests {
         let mut test_player = Player::new("Test Player".to_string());
         let mut test_deck = Deck::new();
         test_deck.push(Card::new(Suit::Spades, Value::Ace, Side::Back));
-        test_player.play_card();
+        test_player.play_card(true);
         let mut test_player2 = Player::new("Test Player 2".to_string());
         test_player2.initial_draw(&mut test_deck);
         let cards = test_player2.player_deck.clone();

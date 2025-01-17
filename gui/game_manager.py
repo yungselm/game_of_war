@@ -8,11 +8,19 @@ class GameManager:
         self.game = gow.Game(self.Player1, self.Player2, self.deck)
         print(self.game)
 
-    def play_game(self):
+    def initialize_game(self):
         # Initialize the game
         print("Initializing game...")
         self.game.initialize_game()
-        
+
+    def play_round(self):
+        # Play a round
+        print("Playing round...")
+        outcome = self.game.play_round()
+        print(f"Round outcome: {outcome}")
+        return outcome
+
+    def play_game(self):
         # Play a round
         print("Playing first round...")
         outcome = self.game.play_round()

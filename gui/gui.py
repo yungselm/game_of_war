@@ -101,12 +101,16 @@ class MainWindow(QMainWindow):
         Layer(self, button2, Qt.AlignLeft)
 
     def start_game(self):
-        GameManager.play_game(self)
+        self.game_manager.initialize_game()
+        outcome = self.game_manager.play_game()
         print("Game started")
+        print(f"Round outcome: {outcome}")
 
     def play_round(self):
-        GameManager.play_game(self)
+        self.game_manager.initialize_game()
+        outcome = self.game_manager.play_game()
         print("Play round")
+        print(f"Round outcome: {outcome}")
 
     def draw_card(self, player, card):
         hashmap_cropping = {
