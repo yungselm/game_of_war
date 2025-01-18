@@ -60,7 +60,7 @@ impl Player {
         }
 
         let card = self.player_deck.extend(cards);
-        if self.player_deck.is_empty() {
+        if !self.player_deck.is_empty() {
             self.dead_or_alive = PlayerState::Alive;
         }
         card
@@ -72,6 +72,14 @@ impl Player {
 
     pub fn get_player_deck(&self) -> Vec<Card> {
         self.player_deck.clone()
+    }
+
+    // needed for Python to print the object
+    pub fn __repr__(&self) -> String {
+        format!("Player: {}, Deck: {:?}, Status: {:?}", 
+        self.player_name, 
+        self.player_deck, 
+        self.dead_or_alive)
     }
 }
 
@@ -122,22 +130,29 @@ mod tests {
     fn test_dead_or_alive() {
         let mut test_player = Player::new("Test Player".to_string());
         let mut test_deck = Deck::new();
-        test_deck.push(Card::new(Suit::Spades, Value::Ace, Side::Back));
-        test_player.play_card(true);
+        test_player.initial_draw(&mut test_deck);
+        assert_eq!(test_player.dead_or_alive, PlayerState::Alive);
+        for _ in 0..26 {
+            test_player.play_card(true);
+        }
         assert_eq!(test_player.dead_or_alive, PlayerState::Dead);
     }
 
     #[test]
     // revived after adding cards
     fn test_dead_or_alive_revived() {
-        let mut test_player = Player::new("Test Player".to_string());
+        let mut test_player1 = Player::new("Test Player 1".to_string());
         let mut test_deck = Deck::new();
-        test_deck.push(Card::new(Suit::Spades, Value::Ace, Side::Back));
-        test_player.play_card(true);
-        let mut test_player2 = Player::new("Test Player 2".to_string());
-        test_player2.initial_draw(&mut test_deck);
-        let cards = test_player2.player_deck.clone();
-        test_player.add_cards(cards);
-        assert_eq!(test_player.dead_or_alive, PlayerState::Alive);
+        test_player1.initial_draw(&mut test_deck);
+        for _ in 0..25 {
+            test_player1.play_card(true);
+        }
+        test_player1.play_card(true);
+        println!("{:?}", test_player1.dead_or_alive);
+        assert_eq!(test_player1.dead_or_alive, PlayerState::Dead);
+        let cards = vec![Card::new(Suit::Hearts, Value::Ace, Side::Back), Card::new(Suit::Hearts, Value::Two, Side::Back)];
+        test_player1.add_cards(cards);
+        println!("{:?}", test_player1.dead_or_alive);
+        assert_eq!(test_player1.dead_or_alive, PlayerState::Alive);
     }
 }

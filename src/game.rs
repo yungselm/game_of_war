@@ -47,7 +47,7 @@ impl Game {
     pub fn play_round(&mut self) -> Outcome {
         let player1_card = self.player1.play_card(true);
         let player2_card = self.player2.play_card(true);
-
+    
         self.table_cards.extend(
             vec![player1_card, player2_card]
                 .into_iter()
@@ -214,7 +214,9 @@ mod tests {
         let mut game = Game::new(player1, player2, deck);
         game.initialize_game();
         let outcome = game.play_round();
-        assert_eq!(game.table_cards.len(), 2);
+        assert_eq!(game.table_cards.len(), 0);
+        assert_ne!(game.player1.get_player_deck().len(), 26);
+        assert_ne!(game.player2.get_player_deck().len(), 26);
         assert_eq!(outcome, Outcome::Running);
     }
 
