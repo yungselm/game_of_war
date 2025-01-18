@@ -66,6 +66,7 @@ class MainWindow(QMainWindow):
         self.x_player2_deck, self.y_player2_deck = 1600, 60
 
         self.init_gui()
+
         self.game_manager.player_updated.connect(self.update_player_display)
         self.game_manager.deck_updated.connect(self.update_deck_display)
         self.game_manager.game_updated.connect(self.update_game_state_display)
@@ -134,10 +135,8 @@ class MainWindow(QMainWindow):
         print("Game started")
 
     def play_round(self):
-        self.game_manager.initialize_game()
-        outcome = self.game_manager.play_game()
-        print("Play round")
-        print(f"Round outcome: {outcome}")
+        self.game_manager.play_round()
+        
 
     def draw_deck_center(self):
         # get top card from deck

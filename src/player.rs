@@ -59,11 +59,10 @@ impl Player {
             }
         }
 
-        let card = self.player_deck.extend(cards);
+        self.player_deck.splice(0..0, cards);
         if !self.player_deck.is_empty() {
             self.dead_or_alive = PlayerState::Alive;
         }
-        card
     }
 
     pub fn get_player_name(&self) -> String {

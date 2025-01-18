@@ -30,10 +30,13 @@ class GameManager(QObject):
     def play_round(self):
         # Play a round
         print("Playing round...")
-        outcome = self.game.play_round()
+        print("Game currently:", self.game)
+        self.game.play_round()
+        print("Game after move:", self.game)
+        outcome = self.game.outcome
         print(f"Round outcome: {outcome}")
+        self.player_updated.emit()
         self.game_updated.emit()
-        return outcome
 
     def play_game(self):
         # Play a round
