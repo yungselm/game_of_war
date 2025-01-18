@@ -1,6 +1,6 @@
 import os
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QImage, QPen
@@ -73,6 +73,17 @@ class MainWindow(QMainWindow):
 
         # Add buttons at the specified positions and sizes
         self.add_buttons()
+        self.add_text_boxes()
+
+        # Create card count labels
+        self.player1_card_count_label = QLabel("Cards: 0", self)
+        self.player1_card_count_label.setGeometry(80, 910, 200, 30)  # Adjust the position as needed
+        self.player1_card_count_label.setStyleSheet("color: white; font-size: 18px; background-color: transparent;")
+        
+        self.player2_card_count_label = QLabel("Cards: 0", self)
+        self.player2_card_count_label.setGeometry(1600, 370, 200, 30)  # Adjust the position as needed
+        self.player2_card_count_label.setStyleSheet("color: white; font-size: 18px; background-color: transparent;")
+
 
         self.draw_deck_center()
 
@@ -92,6 +103,28 @@ class MainWindow(QMainWindow):
         # Use the Layer class to manage widget positioning
         Layer(self, button1, Qt.AlignLeft)
         Layer(self, button2, Qt.AlignLeft)
+
+    def add_text_boxes(self):
+        label1 = QLabel(str(self.game_manager.game.player1.get_player_name()), self)
+        label1.setGeometry(1600, 600, 200, 50)
+        label1.setStyleSheet("color: blue;"
+                              "background-color: #87CEFA;"
+                              "border-style: dashed;"
+                              "border-width: 3px;"
+                              "border-color: #1E90FF;"
+                              "font-size: 20px")
+
+        label2 = QLabel("COM", self)
+        label2.setGeometry(60, 60, 200, 50)
+        label2.setStyleSheet("color: blue;"
+                              "background-color: #87CEFA;"
+                              "border-style: dashed;"
+                              "border-width: 3px;"
+                              "border-color: #1E90FF;"
+                              "font-size: 20px")
+
+        Layer(self, label1, Qt.AlignCenter)
+        Layer(self, label2, Qt.AlignCenter)
 
     def start_game(self):
         self.game_manager.initialize_game()
@@ -119,7 +152,6 @@ class MainWindow(QMainWindow):
     def play_round(self):
         self.game_manager.play_round()
 
-        table_cards = self.game_manager.game.table_cards
         player1_last_card, player2_last_card = self.game_manager.game.get_last_played_cards()
 
         self.draw_card(self.game_manager.Player1, player1_last_card, position="player_card")
@@ -179,8 +211,9 @@ class MainWindow(QMainWindow):
 
     def cleanup_temp_files(self):
         try:
-            os.remove("media/temp_card_p1.png")
-            os.remove("media/temp_card_p2.png")
+            for file in os.listdir("media"):
+                if file.startswith("temp_card"):
+                    os.remove(os.path.join("media", file))
         except:
             pass
 
@@ -196,6 +229,9 @@ class MainWindow(QMainWindow):
         painter.drawRect(750, 150, 200, 300)
         painter.drawRect(1000, 150, 200, 300)
 
+        painter.setPen(QPen(Qt.gray, 3, Qt.DotLine))
+        painter.drawLine(0, 475, 1920, 475)
+
         # Draw cards
         for x, y, image_path in self.drawn_cards:
             card_image = QImage(image_path)
@@ -210,6 +246,10 @@ class MainWindow(QMainWindow):
         # Update GUI elements based on the player's state
         player1_deck_size = len(self.game_manager.Player1.get_player_deck())
         player2_deck_size = len(self.game_manager.Player2.get_player_deck())
+            
+        self.player1_card_count_label.setText(f"Cards: {player1_deck_size}")
+        self.player2_card_count_label.setText(f"Cards: {player2_deck_size}")
+
         print(f"Player 1 deck size: {player1_deck_size}")
         print(f"Player 2 deck size: {player2_deck_size}")
         # Update labels or other GUI elements here

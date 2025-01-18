@@ -7,6 +7,7 @@ class GameManager(QObject):
     player_updated = QtCore.pyqtSignal()  # Emit when state changes
     deck_updated = QtCore.pyqtSignal()
     game_updated = QtCore.pyqtSignal()
+    outcome_updated = QtCore.pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -33,11 +34,12 @@ class GameManager(QObject):
         self.Player1 = self.game.player1
         self.Player2 = self.game.player2
         print("Game after move:", self.game)
-        outcome = self.game.outcome
-        print(f"Round outcome: {outcome}")
+        self.outcome = self.game.outcome
+        print(f"Round outcome: {self.outcome}")
         self.player_updated.emit()
         self.deck_updated.emit()
         self.game_updated.emit()
+        self.outcome_updated.emit()
 
     def play_game(self):
         # Play a round
