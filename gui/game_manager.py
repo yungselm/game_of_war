@@ -18,7 +18,6 @@ class GameManager(QObject):
         print("Initial Game state:", self.game)
 
     def initialize_game(self):
-        # Initialize the game
         print("Initializing game...")
         self.game.initialize_game()
         self.Player1 = self.game.player1
@@ -28,14 +27,16 @@ class GameManager(QObject):
         self.game_updated.emit()    # Notify GUI of game state updates
 
     def play_round(self):
-        # Play a round
         print("Playing round...")
         print("Game currently:", self.game)
         self.game.play_round()
+        self.Player1 = self.game.player1
+        self.Player2 = self.game.player2
         print("Game after move:", self.game)
         outcome = self.game.outcome
         print(f"Round outcome: {outcome}")
         self.player_updated.emit()
+        self.deck_updated.emit()
         self.game_updated.emit()
 
     def play_game(self):

@@ -15,6 +15,7 @@ pub struct Player {
     player_name: String,
     player_deck: Vec<Card>,
     dead_or_alive: PlayerState,
+    last_played_card: Option<Card>,
 }
 
 #[pymethods]
@@ -25,6 +26,7 @@ impl Player {
             player_name,
             player_deck: Vec::new(),
             dead_or_alive: PlayerState::Alive,
+            last_played_card: None,
         }
     }
 
@@ -36,6 +38,16 @@ impl Player {
 
     pub fn play_card(&mut self, face_up: bool) -> Option<Card> {
         let card = self.player_deck.pop();
+        if face_up {
+            // flip card
+            if let Some(mut card) = card.clone() {
+                card.side = Side::Front;
+                self.last_played_card = Some(card);
+            }
+        } else {
+            self.last_played_card = card.clone();
+        }
+
         let card = match card {
             Some(mut card) => {
                 if face_up {
@@ -71,6 +83,10 @@ impl Player {
 
     pub fn get_player_deck(&self) -> Vec<Card> {
         self.player_deck.clone()
+    }
+
+    pub fn get_last_played_card(&self) -> Option<Card> {
+        self.last_played_card.clone()
     }
 
     // needed for Python to print the object
@@ -122,6 +138,15 @@ mod tests {
         let cards = test_player2.player_deck.clone();
         test_player.add_cards(cards);
         assert_eq!(test_player.player_deck.len(), 52);
+    }
+
+    #[test]
+    fn test_last_played_card() {
+        let mut test_player = Player::new("Test Player".to_string());
+        let mut test_deck = Deck::new();
+        test_player.initial_draw(&mut test_deck);
+        let card = test_player.play_card(true);
+        assert_eq!(test_player.last_played_card.map(|c| (c.suit, c.value)), card.map(|c| (c.suit, c.value)));
     }
 
     #[test]

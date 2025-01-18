@@ -182,8 +182,15 @@ impl Game {
     }
 
     #[getter]
-    pub fn table_cards(&self) -> Vec<Card> {
+    pub fn get_table_cards(&self) -> Vec<Card> {
         self.table_cards.clone()
+    }
+
+    pub fn get_last_played_cards(&self) -> (Option<Card>, Option<Card>) {
+        (
+            self.player1.get_last_played_card(),
+            self.player2.get_last_played_card(),
+        )
     }
 
     #[getter] // needed for Python to access the attribute

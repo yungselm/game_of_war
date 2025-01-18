@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QMainWindow, QLabel, QPushButton
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QPainter, QImage, QPen
 from PIL import Image
-import game_of_war as gow
 
 from .game_manager import GameManager
 
@@ -49,14 +48,6 @@ class MainWindow(QMainWindow):
         self.graphical_deck = Image.open("media/full_set.png")
         self.game_manager = GameManager()
 
-        # # Test: draw a card
-        # self.deck = self.game_manager.deck
-        # self.Player1 = self.game_manager.Player1
-        # self.Player2 = self.game_manager.Player2
-        # self.game = self.game_manager.game
-
-        # print("Main window initial game state:", self.game)
-
         self.drawn_cards = []
         self.x_player1_card, self.y_player1_card = 750, 500
         self.x_player2_card, self.y_player2_card = 750, 150
@@ -72,14 +63,6 @@ class MainWindow(QMainWindow):
         self.game_manager.game_updated.connect(self.update_game_state_display)
 
     def __call__(self):
-        # # Test: draw a card
-        # self.deck.shuffle()
-        # card1 = self.deck.draw()
-        # print("card1: ", card1)
-        # self.draw_card(self.Player1, card1)
-        # card2 = self.deck.draw()
-        # print("card2: ", card2)
-        # self.draw_card(self.Player2, card2)
         pass
 
     def init_gui(self):
@@ -96,7 +79,6 @@ class MainWindow(QMainWindow):
         self.show()
 
     def add_buttons(self):
-        # Create two buttons
         button1 = QPushButton("Start Game", self)
         button1.setGeometry(750, 900, 200, 50)
         button1.setStyleSheet("background-color: white; color: green; font-size: 20px;")
@@ -136,13 +118,14 @@ class MainWindow(QMainWindow):
 
     def play_round(self):
         self.game_manager.play_round()
-        
+
+        table_cards = self.game_manager.game.table_cards
+        player1_last_card, player2_last_card = self.game_manager.game.get_last_played_cards()
+
+        self.draw_card(self.game_manager.Player1, player1_last_card, position="player_card")
+        self.draw_card(self.game_manager.Player2, player2_last_card, position="player_card")
 
     def draw_deck_center(self):
-        # get top card from deck
-        # card = self.deck.draw()
-        # self.draw_card(self.Player1, card)
-
         card = self.game_manager.deck.draw()
         self.draw_card(self.game_manager.Player1, card)
 
@@ -188,7 +171,7 @@ class MainWindow(QMainWindow):
             else:
                 card_image = self.graphical_deck.crop((x1, y1, x2, y2)).resize((200, 300))
                 image_path = f"media/temp_card_{player.get_player_name()}.png"
-                card_image.save(image_path)
+                card_image.save(image_path, icc_profile=None)
 
             print(f"Appending card: {image_path} at ({x}, {y})")
             self.drawn_cards.append((x, y, image_path))
