@@ -1,23 +1,38 @@
 import game_of_war as gow
 
-class GameManager:
+from PyQt5 import QtCore
+from PyQt5.QtCore import QObject
+
+class GameManager(QObject):
+    player_updated = QtCore.pyqtSignal()  # Emit when state changes
+    deck_updated = QtCore.pyqtSignal()
+    game_updated = QtCore.pyqtSignal()
+
     def __init__(self):
+        super().__init__()
         self.Player1 = gow.Player("yungselm")
         self.Player2 = gow.Player("COM")
         self.deck = gow.Deck()
         self.game = gow.Game(self.Player1, self.Player2, self.deck)
-        print(self.game)
+        self.outcome = None
+        print("Initial Game state:", self.game)
 
     def initialize_game(self):
         # Initialize the game
         print("Initializing game...")
         self.game.initialize_game()
+        self.Player1 = self.game.player1
+        self.Player2 = self.game.player2
+        self.player_updated.emit()  # Notify GUI of updated player states
+        self.deck_updated.emit()    # Notify GUI of deck updates
+        self.game_updated.emit()    # Notify GUI of game state updates
 
     def play_round(self):
         # Play a round
         print("Playing round...")
         outcome = self.game.play_round()
         print(f"Round outcome: {outcome}")
+        self.game_updated.emit()
         return outcome
 
     def play_game(self):

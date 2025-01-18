@@ -148,11 +148,9 @@ mod tests {
             test_player1.play_card(true);
         }
         test_player1.play_card(true);
-        println!("{:?}", test_player1.dead_or_alive);
         assert_eq!(test_player1.dead_or_alive, PlayerState::Dead);
         let cards = vec![Card::new(Suit::Hearts, Value::Ace, Side::Back), Card::new(Suit::Hearts, Value::Two, Side::Back)];
         test_player1.add_cards(cards);
-        println!("{:?}", test_player1.dead_or_alive);
         assert_eq!(test_player1.dead_or_alive, PlayerState::Alive);
     }
 }

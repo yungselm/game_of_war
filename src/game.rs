@@ -166,6 +166,26 @@ impl Game {
         )
     }
 
+    #[getter]
+    pub fn player1(&self) -> Player {
+        self.player1.clone()
+    }
+
+    #[getter]
+    pub fn player2(&self) -> Player {
+        self.player2.clone()
+    }
+
+    #[getter]
+    pub fn deck(&self) -> Deck {
+        self.deck.clone()
+    }
+
+    #[getter]
+    pub fn table_cards(&self) -> Vec<Card> {
+        self.table_cards.clone()
+    }
+
     #[getter] // needed for Python to access the attribute
     pub fn outcome(&self) -> Outcome {
         self.outcome.clone() // needed clone to compile but don't know why
