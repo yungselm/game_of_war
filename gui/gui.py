@@ -61,6 +61,8 @@ class MainWindow(QMainWindow):
         self.game_manager.player_updated.connect(self.update_player_display)
         self.game_manager.deck_updated.connect(self.update_deck_display)
         self.game_manager.game_updated.connect(self.update_game_state_display)
+        self.game_manager.outcome_updated.connect(self.update_game_state_display)
+        self.game_manager.last_round_winner_updated.connect(self.update_game_state_display)
 
     def __call__(self):
         pass
@@ -84,6 +86,8 @@ class MainWindow(QMainWindow):
         self.player2_card_count_label.setGeometry(1600, 370, 200, 30)  # Adjust the position as needed
         self.player2_card_count_label.setStyleSheet("color: white; font-size: 18px; background-color: transparent;")
 
+        # Add round winner label
+        # self.add_round_winner_test(label_text="Waiting for Game Start...")
 
         self.draw_deck_center()
 
@@ -126,6 +130,20 @@ class MainWindow(QMainWindow):
         Layer(self, label1, Qt.AlignCenter)
         Layer(self, label2, Qt.AlignCenter)
 
+    # def add_round_winner_test(self, label_text=""):
+    #     self.round_winner_label = QLabel(label_text, self)
+    #     self.round_winner_label.setGeometry(750, 110, 450, 50)
+    #     self.round_winner_label.setStyleSheet("color: white;"
+    #                           "background-color: transparent;"
+    #                           "border-style: solid;"
+    #                           "border-width: 3px;"
+    #                           "border-color: white;"
+    #                           "font-size: 20px")
+    #     self.round_winner_label.setAlignment(Qt.AlignCenter)
+    #     self.round_winner_label.hide()
+
+    #     Layer(self, self.round_winner_label, Qt.AlignCenter)
+
     def start_game(self):
         self.game_manager.initialize_game()
 
@@ -156,6 +174,14 @@ class MainWindow(QMainWindow):
 
         self.draw_card(self.game_manager.Player1, player1_last_card, position="player_card")
         self.draw_card(self.game_manager.Player2, player2_last_card, position="player_card")
+        last_winner = self.game_manager.last_round_winner
+        # if last_winner == self.game_manager.Player1:
+        #     self.add_round_winner_test(f"{self.game_manager.Player1.get_player_name()}")
+        # elif last_winner == self.game_manager.Player2:
+        #     self.add_round_winner_test("COM")
+        # else:
+        #     self.add_round_winner_test("Tie")
+        # self.round_winner_label.show()
 
     def draw_deck_center(self):
         card = self.game_manager.deck.draw()
@@ -263,3 +289,12 @@ class MainWindow(QMainWindow):
         # Update the GUI based on the game's state
         print(f"Game state updated. Outcome: {self.game_manager.outcome}")
         # Update other GUI elements here
+        # last_winner = self.game_manager.last_round_winner
+        # if last_winner == self.game_manager.Player1:
+        #     winner_text = f"{self.game_manager.Player1.get_player_name()} Wins!"
+        # elif last_winner == self.game_manager.Player2:
+        #     winner_text = "COM Wins!"
+        # else:
+        #     winner_text = "It's a Tie!"
+        # self.add_round_winner_test(winner_text)
+        # self.round_winner_label.show()  # Ensure the label is visible

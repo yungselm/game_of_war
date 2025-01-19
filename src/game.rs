@@ -22,6 +22,7 @@ pub struct Game {
     table_cards: Vec<Card>,
     game_over: bool,
     outcome: Outcome,
+    last_round_winner: Option<Player>,
 }
 
 #[pymethods]
@@ -35,6 +36,7 @@ impl Game {
             table_cards: Vec::new(),
             game_over: false,
             outcome: Outcome::Running,
+            last_round_winner: None,
         }
     }
 
@@ -59,10 +61,12 @@ impl Game {
                 if player1_card.value > player2_card.value {
                     self.player1.add_cards(self.table_cards.clone()); // why needed clone?
                     self.table_cards.clear();
+                    self.last_round_winner = Some(self.player1.clone());
                     self.evaluate_outcome()
                 } else if player1_card.value < player2_card.value {
                     self.player2.add_cards(self.table_cards.clone());
                     self.table_cards.clear();
+                    self.last_round_winner = Some(self.player2.clone());
                     self.evaluate_outcome()
                 } else {
                     // Go to War!!
@@ -122,10 +126,12 @@ impl Game {
                 if player1_card.value > player2_card.value {
                     self.player1.add_cards(self.table_cards.clone());
                     self.table_cards.clear();
+                    self.last_round_winner = Some(self.player1.clone());
                     self.evaluate_outcome()
                 } else if player1_card.value < player2_card.value {
                     self.player2.add_cards(self.table_cards.clone());
                     self.table_cards.clear();
+                    self.last_round_winner = Some(self.player2.clone());
                     self.evaluate_outcome()
                 } else {
                     println!("War continues!");
@@ -196,6 +202,11 @@ impl Game {
     #[getter] // needed for Python to access the attribute
     pub fn outcome(&self) -> Outcome {
         self.outcome.clone() // needed clone to compile but don't know why
+    }
+
+    #[getter]
+    pub fn last_round_winner(&self) -> Option<Player> {
+        self.last_round_winner.clone()
     }
 
     #[getter]

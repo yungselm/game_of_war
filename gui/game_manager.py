@@ -8,6 +8,7 @@ class GameManager(QObject):
     deck_updated = QtCore.pyqtSignal()
     game_updated = QtCore.pyqtSignal()
     outcome_updated = QtCore.pyqtSignal()
+    last_round_winner_updated = QtCore.pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -16,6 +17,7 @@ class GameManager(QObject):
         self.deck = gow.Deck()
         self.game = gow.Game(self.Player1, self.Player2, self.deck)
         self.outcome = None
+        self.last_round_winner = None
         print("Initial Game state:", self.game)
 
     def initialize_game(self):
@@ -29,13 +31,13 @@ class GameManager(QObject):
 
     def play_round(self):
         print("Playing round...")
-        print("Game currently:", self.game)
         self.game.play_round()
         self.Player1 = self.game.player1
         self.Player2 = self.game.player2
-        print("Game after move:", self.game)
         self.outcome = self.game.outcome
+        self.round_winner = self.game.last_round_winner
         print(f"Round outcome: {self.outcome}")
+        print(f"Last round winner: {self.round_winner}")
         self.player_updated.emit()
         self.deck_updated.emit()
         self.game_updated.emit()
