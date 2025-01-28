@@ -12,12 +12,17 @@ pub struct Deck {
 impl Deck {
     #[new]
     pub fn new() -> Self {
-        let mut deck = Vec::new();
-        for &suit in &[Suit::Spades, Suit::Hearts, Suit::Diamonds, Suit::Clubs] {
-            for &value in &[Value::Two, Value::Three, Value::Four, Value::Five, Value::Six, Value::Seven, Value::Eight, Value::Nine, Value::Ten, Value::Jack, Value::Queen, Value::King, Value::Ace] {
-                deck.push(Card::new(suit, value, Side::Back));
-            }
-        }
+        let deck = [Suit::Spades, Suit::Hearts, Suit::Diamonds, Suit::Clubs]
+            .iter()
+            .flat_map(|&suit| {
+                [
+                    Value::Two, Value::Three, Value::Four, Value::Five, Value::Six, Value::Seven,
+                    Value::Eight, Value::Nine, Value::Ten, Value::Jack, Value::Queen, Value::King, Value::Ace,
+                ]
+                .iter()
+                .map(move |&value| Card::new(suit, value, Side::Back))
+            })
+            .collect();
         Deck { deck }
     }
 

@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)] // Add the Clone and Copy traits to the Suit enum, otherwise conversion to python objects fails
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[pyclass(eq, eq_int)]
 pub enum Suit {
     Spades,
@@ -27,6 +27,26 @@ pub enum Value {
     Ace,
 }
 
+impl Value {
+    fn rank(&self) -> u8 {
+        match self {
+            Value::Two => 0,
+            Value::Three => 1,
+            Value::Four => 2,
+            Value::Five => 3,
+            Value::Six => 4,
+            Value::Seven => 5,
+            Value::Eight => 6,
+            Value::Nine => 7,
+            Value::Ten => 8,
+            Value::Jack => 9,
+            Value::Queen => 10,
+            Value::King => 11,
+            Value::Ace => 12,
+        }
+    }
+}
+
 impl PartialOrd for Value {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         Some(self.cmp(other))
@@ -35,38 +55,7 @@ impl PartialOrd for Value {
 
 impl Ord for Value {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        use Value::*;
-        let self_rank = match self{
-            Two => 0,
-            Three => 1,
-            Four => 2,
-            Five => 3,
-            Six => 4,
-            Seven => 5,
-            Eight => 6,
-            Nine => 7,
-            Ten => 8,
-            Jack => 9,
-            Queen => 10,
-            King => 11,
-            Ace => 12,
-        };
-        let other_rank = match other {
-            Two => 0,
-            Three => 1,
-            Four => 2,
-            Five => 3,
-            Six => 4,
-            Seven => 5,
-            Eight => 6,
-            Nine => 7,
-            Ten => 8,
-            Jack => 9,
-            Queen => 10,
-            King => 11,
-            Ace => 12,
-        };
-        self_rank.cmp(&other_rank)
+        self.rank().cmp(&other.rank())
     }
 }
 
@@ -92,14 +81,14 @@ pub struct Card {
 impl Card {
     #[new]
     pub fn new(suit: Suit, value: Value, side: Side) -> Self {
-        Card { suit, value, side}
+        Card { suit, value, side }
     }
 
     pub fn flip(&mut self) {
         self.side = match self.side {
             Side::Front => Side::Back,
             Side::Back => Side::Front,
-        }
+        };
     }
 }
 
