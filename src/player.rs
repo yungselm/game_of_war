@@ -36,49 +36,38 @@ impl Player {
         }
     }
 
-    pub fn play_card(&mut self, face_up: bool) -> Option<Card> {
-        let card = self.player_deck.pop();
+    pub fn play_card(&mut self, face_up:bool) -> Option<Card> {
+        let mut card = self.player_deck.pop()?;
+
         if face_up {
-            // flip card
-            if let Some(mut card) = card.clone() {
-                card.side = Side::Front;
-                self.last_played_card = Some(card);
-            }
-        } else {
-            self.last_played_card = card.clone();
+            card.side = Side::Front;
         }
 
-        let card = match card {
-            Some(mut card) => {
-                if face_up {
-                    card.side = Side::Front;
-                }
-                card
-            },
-            _ => return None,
-        };
+        self.last_played_card = Some(card.clone());
+
         if self.player_deck.is_empty() {
             self.dead_or_alive = PlayerState::Dead;
         }
+
         Some(card)
     }
 
     pub fn add_cards(&mut self, mut cards: Vec<Card>) {
-        // ensure that all cards have "Back" when adding to player_deck
-        for card in cards.iter_mut() {
+        cards.iter_mut().for_each(|card| {
             if card.side == Side::Front {
                 card.side = Side::Back;
             }
-        }
+        });
 
         self.player_deck.splice(0..0, cards);
+
         if !self.player_deck.is_empty() {
             self.dead_or_alive = PlayerState::Alive;
         }
     }
 
-    pub fn get_player_name(&self) -> String {
-        self.player_name.clone()
+    pub fn get_player_name(&self) -> &str {
+        &self.player_name
     }
 
     pub fn get_player_deck(&self) -> Vec<Card> {
