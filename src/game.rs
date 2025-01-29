@@ -49,17 +49,17 @@ impl Game {
     pub fn play_round(&mut self) -> Outcome {
         let player1_card = self.player1.play_card(true);
         let player2_card = self.player2.play_card(true);
-    
+
         self.table_cards.extend(
             vec![player1_card, player2_card]
                 .into_iter()
-                .filter_map(|card| card)
+                .filter_map(|card| card),
         );
 
         match (player1_card, player2_card) {
             (Some(player1_card), Some(player2_card)) => {
                 if player1_card.value > player2_card.value {
-                    self.player1.add_cards(self.table_cards.clone()); // why needed clone?
+                    self.player1.add_cards(self.table_cards.clone());
                     self.table_cards.clear();
                     self.last_round_winner = Some(self.player1.clone());
                     self.evaluate_outcome()
@@ -69,16 +69,15 @@ impl Game {
                     self.last_round_winner = Some(self.player2.clone());
                     self.evaluate_outcome()
                 } else {
-                    // Go to War!!
                     println!("War!");
                     self.handle_war()
                 }
             }
-            (None, Some(_player2_card)) => {
+            (None, Some(_)) => {
                 self.game_over = true;
                 Outcome::Player2Wins
             }
-            (Some(_player1_card), None) => {
+            (Some(_), None) => {
                 self.game_over = true;
                 Outcome::Player1Wins
             }
@@ -87,23 +86,27 @@ impl Game {
                 Outcome::Tie
             }
         }
-        
     }
 
     pub fn evaluate_outcome(&mut self) -> Outcome {
-        if self.player1.get_player_deck().is_empty() {
-            self.game_over = true;
-            self.outcome = Outcome::Player2Wins;
-        } else if self.player2.get_player_deck().is_empty() {
-            self.game_over = true;
-            self.outcome = Outcome::Player1Wins;
-        } else if self.player1.get_player_deck().is_empty() && self.player2.get_player_deck().is_empty() {
-            self.game_over = true;
-            self.outcome = Outcome::Tie;
-        } else {
-            self.outcome = Outcome::Running;
+        match (
+            self.player1.get_player_deck().is_empty(),
+            self.player2.get_player_deck().is_empty(),
+        ) {
+            (true, true) => {
+                self.game_over = true;
+                Outcome::Tie
+            }
+            (true, false) => {
+                self.game_over = true;
+                Outcome::Player2Wins
+            }
+            (false, true) => {
+                self.game_over = true;
+                Outcome::Player1Wins
+            }
+            (false, false) => Outcome::Running,
         }
-        self.outcome.clone()
     }
 
     fn handle_war(&mut self) -> Outcome {
@@ -118,7 +121,7 @@ impl Game {
         self.table_cards.extend(
             vec![player_1_facedown, player_2_facedown, player_1_faceup, player_2_faceup]
                 .into_iter()
-                .filter_map(|card| card)
+                .filter_map(|card| card),
         );
 
         match (player_1_faceup, player_2_faceup) {
@@ -138,11 +141,11 @@ impl Game {
                     self.handle_war()
                 }
             }
-            (None, Some(_player2_card)) => {
+            (None, Some(_)) => {
                 self.game_over = true;
                 Outcome::Player2Wins
             }
-            (Some(_player1_card), None) => {
+            (Some(_), None) => {
                 self.game_over = true;
                 Outcome::Player1Wins
             }
@@ -164,14 +167,11 @@ impl Game {
     pub fn __repr__(&self) -> String {
         format!(
             "Game(player1: {:?}, player2: {:?}, deck size: {}, table cards: {:?}, outcome: {:?})",
-            self.player1,
-            self.player2,
-            self.deck.len(),
-            self.table_cards,
-            self.outcome
+            self.player1, self.player2, self.deck.len(), self.table_cards, self.outcome
         )
     }
 
+    // tried with references, but python needs clone because of lifetimes in Rust
     #[getter]
     pub fn player1(&self) -> Player {
         self.player1.clone()
@@ -199,9 +199,9 @@ impl Game {
         )
     }
 
-    #[getter] // needed for Python to access the attribute
+    #[getter]
     pub fn outcome(&self) -> Outcome {
-        self.outcome.clone() // needed clone to compile but don't know why
+        self.outcome.clone()
     }
 
     #[getter]
