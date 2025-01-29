@@ -1,3 +1,5 @@
+use std::ops::{Deref, DerefMut};
+
 use pyo3::prelude::*;
 use super::cards::{Card, Suit, Value, Side};
 use rand::seq::SliceRandom;
@@ -47,6 +49,21 @@ impl Deck {
     // needed for testing
     pub fn get_deck(&self) -> Vec<Card> {
         self.deck.clone()
+    }
+}
+
+// apparently more common pattern in Rust, allows to call methods on Deck directly
+impl Deref for Deck {
+    type Target = Vec<Card>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.deck
+    }
+}
+
+impl DerefMut for Deck {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.deck
     }
 }
 
